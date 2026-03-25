@@ -3,12 +3,21 @@ import { TransferRepository } from '@domain/repositories/transfer-repository';
 import { Transfer } from '@domain/entities/transfer';
 import { getDatabase } from '../sqlite';
 
+interface TransferRow {
+    id: number;
+    from_bank_account_id: number;
+    to_bank_account_id: number;
+    amount: number;
+    reference_date: string;
+}
+
 @injectable()
 export class SQLiteTransferRepository implements TransferRepository {
-    async save(transfer: Transfer): Promise<Transfer> {
+    save(transfer: Transfer): Promise<Transfer> {
         const db = getDatabase();
         const result = db.prepare(`
-            INSERT INTO transfers (from_bank_account_id, to_bank_account_id, amount, reference_date)
+            INSERT INTO transfers
+            (from_bank_account_id, to_bank_account_id, amount, reference_date)
             VALUES (?, ?, ?, ?)
         `).run(
             transfer.fromBankAccountId,
@@ -18,24 +27,25 @@ export class SQLiteTransferRepository implements TransferRepository {
         );
 
         transfer.id = result.lastInsertRowid as number;
-        return transfer;
+        return Promise.resolve(transfer);
     }
 
-    async listByAccount(accountId: number): Promise<Transfer[]> {
+    listByAccount(accountId: number): Promise<Transfer[]> {
         const db = getDatabase();
         const rows = db.prepare(`
-            SELECT id, from_bank_account_id, to_bank_account_id, amount, reference_date
+            SELECT id, from_bank_account_id, to_bank_account_id,
+                   amount, reference_date
             FROM transfers
             WHERE from_bank_account_id = ? OR to_bank_account_id = ?
             ORDER BY reference_date DESC
-        `).all(accountId, accountId) as any[];
+        `).all(accountId, accountId) as TransferRow[];
 
-        return rows.map((row) => ({
+        return Promise.resolve(rows.map((row) => ({
             id: row.id,
             fromBankAccountId: row.from_bank_account_id,
             toBankAccountId: row.to_bank_account_id,
             amount: row.amount,
             referenceDate: new Date(row.reference_date),
-        }));
+        })));
     }
 }

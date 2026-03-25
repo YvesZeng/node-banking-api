@@ -6,7 +6,6 @@ import express from 'express';
 import 'express-async-errors';
 
 import apiRouter from './api';
-import logger from 'jet-logger';
 
 const app = express();
 

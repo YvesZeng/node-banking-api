@@ -31,9 +31,10 @@ router.post('/', checkSchema(newBankAccountSchema), async (req: Request, res: Re
             return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message });
         }
     }
+    return res;
 });
 
-router.get('/:bankAccountId', async (req: Request, res: Response) => {
+router.get('/:bankAccountId', (req: Request, res: Response) => {
     const { bankAccountId } = req.params;
 
     if (!parseInt(bankAccountId)) {
@@ -45,20 +46,21 @@ router.get('/:bankAccountId', async (req: Request, res: Response) => {
     const retrieveBankAccountBalance = container.get<RetrieveBankAccountBalance>(
         TYPES.RetrieveBankAccountBalance,
     );
-    try {
-        const balance = await retrieveBankAccountBalance.execute(parseInt(bankAccountId));
-        return res.status(StatusCodes.OK).json({ balance: balance });
-    } catch (err) {
-        if (err instanceof BankAccountNotFound) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: err.message });
-        }
-        return res
-            .status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .json({ message: 'Something went wrong' });
-    }
+    retrieveBankAccountBalance.execute(parseInt(bankAccountId))
+        .then((balance) => {
+            return res.status(StatusCodes.OK).json({ balance });
+        })
+        .catch((err) => {
+            if (err instanceof BankAccountNotFound) {
+                return res.status(StatusCodes.NOT_FOUND).json({ message: err.message });
+            }
+            return res
+                .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                .json({ message: 'Something went wrong' });
+        });
 });
 
-router.get('/:bankAccountId/transfers', async (req: Request, res: Response) => {
+router.get('/:bankAccountId/transfers', (req: Request, res: Response) => {
     const { bankAccountId } = req.params;
 
     if (!parseInt(bankAccountId)) {
@@ -68,8 +70,10 @@ router.get('/:bankAccountId/transfers', async (req: Request, res: Response) => {
     }
 
     const listTransferHistory = container.get<ListTransferHistory>(TYPES.ListTransferHistory);
-    const transfers = await listTransferHistory.execute(parseInt(bankAccountId));
-    return res.status(StatusCodes.OK).json(transfers);
+    listTransferHistory.execute(parseInt(bankAccountId))
+        .then((transfers) => {
+            return res.status(StatusCodes.OK).json(transfers);
+        });
 });
 
 export default router;
