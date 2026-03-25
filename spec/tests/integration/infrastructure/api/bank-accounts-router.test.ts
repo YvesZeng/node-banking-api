@@ -6,7 +6,6 @@ import { container } from '../../../../../src/infrastructure/dependency-containe
 import { TYPES } from '@shared/types';
 import { BankAccountRepository } from '@domain/repositories/bank-account-repository';
 import { bankAccountFixture } from '../../../__fixtures__/bank-account.fixture';
-import { customerFixture } from '../../../__fixtures__/customer.fixture';
 import { TransferRepository } from '@domain/repositories/transfer-repository';
 import { Transfer } from '@domain/entities/transfer';
 const { setupDB } = require('../../../setupTests');
@@ -129,8 +128,8 @@ describe('Infrastructure | API | BankAccountsRouter', () => {
                 id: res.body.id,
                 balance: payload.depositAmount,
                 customer: {
-                    name: customerFixture.name,
-                    id: 1,
+                    name: 'Arisha Barron',
+                    id: '1',
                 },
             };
             expect(res.status).toBe(StatusCodes.CREATED);
@@ -164,23 +163,37 @@ describe('Infrastructure | API | BankAccountsRouter', () => {
         });
 
         it('should return the list of transfers from and to the given account', async () => {
+            const bankAccountRepository = container.get<BankAccountRepository>(
+                TYPES.BankAccountRepository,
+            );
             const transferRepository = container.get<TransferRepository>(TYPES.TransferRepository);
+            
+            // Create bank accounts first
+            const account1 = await bankAccountRepository.save({
+                customer: { id: '1', name: 'Arisha Barron' },
+                balance: 100,
+            } as any);
+            const account2 = await bankAccountRepository.save({
+                customer: { id: '1', name: 'Arisha Barron' },
+                balance: 100,
+            } as any);
+            
             const transferFromGivenAccount: Transfer = {
-                fromBankAccountId: 1,
-                toBankAccountId: 2,
+                fromBankAccountId: account1.id!,
+                toBankAccountId: account2.id!,
                 amount: 100,
                 referenceDate: new Date(),
                 id: 1,
             };
             const transferToGivenAccount: Transfer = {
-                fromBankAccountId: 2,
-                toBankAccountId: 1,
+                fromBankAccountId: account2.id!,
+                toBankAccountId: account1.id!,
                 amount: 100,
                 referenceDate: new Date(),
                 id: 1,
             };
             const randomTransfer: Transfer = {
-                fromBankAccountId: 2,
+                fromBankAccountId: account2.id!,
                 toBankAccountId: 20,
                 amount: 100,
                 referenceDate: new Date(),
@@ -200,7 +213,7 @@ describe('Infrastructure | API | BankAccountsRouter', () => {
                 },
             ];
 
-            const res = await agent.get('/api/bank-accounts/1/transfers');
+            const res = await agent.get(`/api/bank-accounts/${account1.id}/transfers`);
 
             expect(res.status).toBe(StatusCodes.OK);
             expect(res.body).toStrictEqual(expectedResponse);
