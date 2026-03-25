@@ -1,25 +1,25 @@
-### Deploying to production
-This project assumes that you are using Docker or any other docker-based tool like AWS ECS, Fargate or Kubernetes.
-In order to build the image to production, use the steps below:
-- You will need to have mongodb running. If you are using the local image, you need to run `docker-compose up mongo`.
-- run `docker build -t banking --target production .` from the root folder of the project
-- run `docker run -e MONGO_DB_HOST=host.docker.internal -e MONGO_DB_USERNAME=username -e MONGO_DB_PASSWORD=password -e MONGO_DB_DATABASE=banking -p 3000:3000 banking yarn start`
-- Please note that we are sending secrets in the command. In production we would never do that, we would inject those secrets as env vars using some vault like `AWS Parameter Store`
-
 ### How to run (development)
-This project uses Node + Express + Typescript. Follow the steps below in order to use it:
-- run `docker-compose up` in the root folder of the project
-- the project will be running with live reload enabled and it will be exposed on port 3000.
-- If you don't want to use docker, you can simply start the mongo container by running `docker-compose up mongo` and then run `yarn start:dev` from your local folder.
+This project uses Node.js + Express + TypeScript + SQLite. Follow the steps below:
+- Run `npm install` to install dependencies
+- Run `npm run start:dev` to start the development server with live reload
+- The API will be available at http://localhost:3000
+
+No Docker or external database required - SQLite database is auto-created on first run.
 
 ### Running tests
-The tests are using an in-memory MongoDB, so you don't need to run any container or mongo in order to run the tests locally. All you need to do is `yarn test`.
+All tests use an in-memory SQLite database. Run:
+```bash
+npm test
+```
 
+### Deploying to production
+- Run `npm run build` to compile TypeScript
+- Run `npm start` to start the production server
+- Configure the `SQLITE_DB_PATH` environment variable to specify the database file location (optional, defaults to `./database.sqlite`)
 
 ### Assumptions and missing items
 - It says that I should return Balances for a given account, but the account has only one balance. So I'm returning only that. Should I return the historical balances?
 - In a real world the authenticated person would be able to transfer only from his account to another account. Since we don't have authentication at this moment, I'm assuming that you can transfer from any account to any other account using the API.
-- In a real world the in memory repositories would be replaced by a database
 - Given the timeframe, I didn't implement integration tests for the APIs. I added unit tests for queries and use cases and integration tests for the repositories.
 - There are a couple issues reported by ESLint that were not fixed, but it should be easy to fix.
 
