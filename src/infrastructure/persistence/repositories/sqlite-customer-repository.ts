@@ -8,7 +8,7 @@ import { getDatabase } from '../sqlite';
 export class SQLiteCustomerRepository implements CustomerRepository {
     async getById(id: string): Promise<Customer> {
         const db = getDatabase();
-        const customer = db.prepare('SELECT id, name FROM customers WHERE id = ?').get(parseInt(id));
+        const customer = db.prepare('SELECT id, name FROM customers WHERE id = ?').get(parseInt(id)) as { id: number; name: string };
 
         if (!customer) {
             throw new CustomerNotFound(`Customer with id ${id} not found`);
