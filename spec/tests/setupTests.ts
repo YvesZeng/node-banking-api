@@ -18,6 +18,11 @@ module.exports = {
             }
         });
 
+        beforeEach(() => {
+            db.exec('DELETE FROM transfers');
+            db.exec('DELETE FROM bank_accounts');
+        });
+
         afterEach(() => {
             db.exec('DELETE FROM transfers');
             db.exec('DELETE FROM bank_accounts');
