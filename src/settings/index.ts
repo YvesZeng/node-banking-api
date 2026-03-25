@@ -11,7 +11,7 @@ import commandLineArgs from 'command-line-args';
             defaultValue: 'development',
             type: String,
         },
-    ]);
+    ]) as { env: string };
     // Set the env file
     const envVars = dotenv.config({
         path: path.join(__dirname, `env/${options.env}.env`),
