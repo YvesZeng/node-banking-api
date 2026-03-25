@@ -10,25 +10,22 @@ import { TransferAmount } from '@application/use-cases/transfer-amount';
 import { SQLiteTransferRepository } from '@repositories/sqlite-transfer-repository';
 import { TransferRepository } from '@domain/repositories/transfer-repository';
 import { ListTransferHistory } from '@application/queries/list-transfer-history';
+import { SQLiteLoanRepository } from '@repositories/sqlite-loan-repository';
+import { LoanRepository } from '@domain/repositories/loan-repository';
+import { CreateLoan } from '@application/use-cases/create-loan';
+import { MakeLoanPayment } from '@application/use-cases/make-loan-payment';
+import { GetLoanSchedule } from '@application/queries/get-loan-schedule';
 
 const container = new Container();
-container
-    .bind<CustomerRepository>(TYPES.CustomerRepository)
-    .to(SQLiteCustomerRepository)
-    .inSingletonScope();
-container
-    .bind<BankAccountRepository>(TYPES.BankAccountRepository)
-    .to(SQLiteBankAccountRepository)
-    .inSingletonScope();
-container
-    .bind<TransferRepository>(TYPES.TransferRepository)
-    .to(SQLiteTransferRepository)
-    .inSingletonScope();
-
-container
-    .bind<RetrieveBankAccountBalance>(TYPES.RetrieveBankAccountBalance)
-    .to(RetrieveBankAccountBalance);
+container.bind<CustomerRepository>(TYPES.CustomerRepository).to(SQLiteCustomerRepository).inSingletonScope();
+container.bind<BankAccountRepository>(TYPES.BankAccountRepository).to(SQLiteBankAccountRepository).inSingletonScope();
+container.bind<TransferRepository>(TYPES.TransferRepository).to(SQLiteTransferRepository).inSingletonScope();
+container.bind<LoanRepository>(TYPES.LoanRepository).to(SQLiteLoanRepository).inSingletonScope();
+container.bind<RetrieveBankAccountBalance>(TYPES.RetrieveBankAccountBalance).to(RetrieveBankAccountBalance);
 container.bind<CreateBankAccount>(TYPES.CreateBankAccount).to(CreateBankAccount);
 container.bind<TransferAmount>(TYPES.TransferAmount).to(TransferAmount);
 container.bind<ListTransferHistory>(TYPES.ListTransferHistory).to(ListTransferHistory);
+container.bind<CreateLoan>(TYPES.CreateLoan).to(CreateLoan);
+container.bind<MakeLoanPayment>(TYPES.MakeLoanPayment).to(MakeLoanPayment);
+container.bind<GetLoanSchedule>(TYPES.GetLoanSchedule).to(GetLoanSchedule);
 export { container };
