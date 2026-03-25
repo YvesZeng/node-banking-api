@@ -91,6 +91,9 @@ export default {
 
     // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
     // modulePathIgnorePatterns: [],
+    
+    // Ignore .worktrees directory
+    modulePathIgnorePatterns: ['<rootDir>/.worktrees/'],
 
     // Activates notifications for test results
     // notify: false,
@@ -167,9 +170,6 @@ export default {
 
     // This option allows the use of a custom results processor
     // testResultsProcessor: undefined,
-
-    // This option allows use of a custom test runner
-    // testRunner: "jest-circus/runner",
 
     // This option sets the URL for the jsdom environment. It is reflected in properties such as location.href
     // testURL: "http://localhost",
