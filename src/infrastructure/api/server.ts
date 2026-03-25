@@ -6,14 +6,10 @@ import express from 'express';
 import 'express-async-errors';
 
 import apiRouter from './api';
-import { connectDb } from '../persistence/database';
 import logger from 'jet-logger';
 
 const app = express();
 
-if (process.env.NODE_ENV !== 'test') {
-    connectDb().then(() => logger.info('Database connected'));
-}
 /***********************************************************************************
  *                                  Middlewares
  **********************************************************************************/
