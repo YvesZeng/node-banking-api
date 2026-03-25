@@ -6,7 +6,6 @@ import { container } from '../../../../../src/infrastructure/dependency-containe
 import { TYPES } from '@shared/types';
 import { BankAccountRepository } from '@domain/repositories/bank-account-repository';
 import { bankAccountFixture } from '../../../__fixtures__/bank-account.fixture';
-import { CustomerModel } from '../../../../../src/infrastructure/persistence/models/customer.model';
 import { customerFixture } from '../../../__fixtures__/customer.fixture';
 import { TransferAmount } from '@application/use-cases/transfer-amount';
 import { BankAccount } from '@domain/entities/bank-account';

@@ -6,7 +6,6 @@ import { container } from '../../../../../src/infrastructure/dependency-containe
 import { TYPES } from '@shared/types';
 import { BankAccountRepository } from '@domain/repositories/bank-account-repository';
 import { bankAccountFixture } from '../../../__fixtures__/bank-account.fixture';
-import { CustomerModel } from '../../../../../src/infrastructure/persistence/models/customer.model';
 import { customerFixture } from '../../../__fixtures__/customer.fixture';
 import { TransferRepository } from '@domain/repositories/transfer-repository';
 import { Transfer } from '@domain/entities/transfer';
@@ -79,7 +78,7 @@ describe('Infrastructure | API | BankAccountsRouter', () => {
     describe('Test POST /bank-accounts', () => {
         it('should return 400 bad request when invalid customer id is sent', (done) => {
             const payload = {
-                customerId: '6263f7bbe2de19eaed0e13f7',
+                customerId: 999,
                 depositAmount: 200,
             };
             const expectedResponse = {
@@ -119,12 +118,8 @@ describe('Infrastructure | API | BankAccountsRouter', () => {
         });
 
         it('should return 201 created when a valid payload is sent', async () => {
-            const customer = await new CustomerModel({
-                ...customerFixture,
-                id: '6267db50c0b8d967a666042e',
-            }).save();
             const payload = {
-                customerId: customer.id,
+                customerId: 1,
                 depositAmount: 200,
             };
 
@@ -134,8 +129,8 @@ describe('Infrastructure | API | BankAccountsRouter', () => {
                 id: res.body.id,
                 balance: payload.depositAmount,
                 customer: {
-                    name: customer.name,
-                    id: customer.id,
+                    name: customerFixture.name,
+                    id: 1,
                 },
             };
             expect(res.status).toBe(StatusCodes.CREATED);
