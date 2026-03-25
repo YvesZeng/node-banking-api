@@ -1,29 +1,28 @@
 import { Container } from 'inversify';
 import { TYPES } from '@shared/types';
 import { CustomerRepository } from '@domain/repositories/customer-repository';
-import { MemoryCustomerRepository } from '@repositories/memory-customer-repository';
-import { MemoryBankAccountRepository } from '@repositories/memory-bank-account-repository';
+import { SQLiteCustomerRepository } from '@repositories/sqlite-customer-repository';
+import { SQLiteBankAccountRepository } from '@repositories/sqlite-bank-account-repository';
 import { BankAccountRepository } from '@domain/repositories/bank-account-repository';
 import { RetrieveBankAccountBalance } from '@application/queries/retrieve-bank-account-balance';
 import { CreateBankAccount } from '@application/use-cases/create-bank-account';
 import { TransferAmount } from '@application/use-cases/transfer-amount';
-import { MemoryTransferRepository } from '@repositories/memory-transfer-repository';
+import { SQLiteTransferRepository } from '@repositories/sqlite-transfer-repository';
 import { TransferRepository } from '@domain/repositories/transfer-repository';
 import { ListTransferHistory } from '@application/queries/list-transfer-history';
-import { MongoCustomerRepository } from '@repositories/mongo-customer-repository';
 
 const container = new Container();
 container
     .bind<CustomerRepository>(TYPES.CustomerRepository)
-    .to(MongoCustomerRepository)
+    .to(SQLiteCustomerRepository)
     .inSingletonScope();
 container
     .bind<BankAccountRepository>(TYPES.BankAccountRepository)
-    .to(MemoryBankAccountRepository)
+    .to(SQLiteBankAccountRepository)
     .inSingletonScope();
 container
     .bind<TransferRepository>(TYPES.TransferRepository)
-    .to(MemoryTransferRepository)
+    .to(SQLiteTransferRepository)
     .inSingletonScope();
 
 container
