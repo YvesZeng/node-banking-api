@@ -31,7 +31,7 @@ export class TransferAmount {
 
         await this.bankAccountRepository.update(fromBankAccount);
         await this.bankAccountRepository.update(toBankAccount);
-        this.transferRepository.save(transfer);
+        await this.transferRepository.save(transfer);
         return transfer;
     }
 }

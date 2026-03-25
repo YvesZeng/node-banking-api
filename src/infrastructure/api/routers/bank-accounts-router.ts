@@ -25,7 +25,7 @@ router.post('/', checkSchema(newBankAccountSchema), async (req: Request, res: Re
     };
     try {
         const bankAccount = await createBankAccount.execute(bankAccountData);
-        return res.status(StatusCodes.OK).json(bankAccount);
+        return res.status(StatusCodes.CREATED).json(bankAccount);
     } catch (err) {
         if (err instanceof CustomerNotFound) {
             return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message });
