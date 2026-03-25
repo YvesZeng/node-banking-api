@@ -1,37 +1,30 @@
 import 'reflect-metadata';
-import { connect } from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { getDatabase, closeDatabase } from '../../src/infrastructure/persistence/sqlite';
+import Database from 'better-sqlite3';
 
-const mongoose = require('mongoose');
-let mongo: MongoMemoryServer | null = null;
-
-async function removeAllCollections() {
-    const collections = Object.keys(mongoose.connection.collections);
-    for (const collectionName of collections) {
-        const collection = mongoose.connection.collections[collectionName];
-        await collection.deleteMany();
-    }
-}
+let db: Database.Database;
 
 module.exports = {
     setupDB() {
-        // Connect to Mongoose
-        beforeAll(async () => {
-            mongo = await MongoMemoryServer.create();
-            const uri = mongo.getUri();
-            await connect(uri);
+        beforeAll(() => {
+            process.env.SQLITE_DB_PATH = ':memory:';
+            db = getDatabase();
         });
 
-        // Cleans up database between each test
-        afterEach(async () => {
-            await removeAllCollections();
+        afterEach(() => {
+            db.exec('DELETE FROM transfers');
+            db.exec('DELETE FROM bank_accounts');
+            db.exec('DELETE FROM customers');
+            
+            const insert = db.prepare('INSERT INTO customers (name) VALUES (?)');
+            const names = ['Arisha Barron', 'Branden Gibson', 'Rhonda Church', 'Georgina Hazel'];
+            for (const name of names) {
+                insert.run(name);
+            }
         });
 
-        // Disconnect Mongoose
-        afterAll(async () => {
-            await mongoose.connection.dropDatabase();
-            await mongoose.connection.close();
-            await mongo?.stop();
+        afterAll(() => {
+            closeDatabase();
         });
     },
 };
