@@ -42,5 +42,17 @@ describe('Domain | Entities | BankAccount', () => {
                 expect(bankAccount.balance).toEqual(expectedBalance);
             });
         });
+
+        describe('when transfer value equals current balance', () => {
+            it('should allow exact balance transfer leaving zero balance', () => {
+                const bankAccount = bankAccountFixture;
+                const transferValue = bankAccount.balance;
+                const expectedBalance = 0;
+
+                bankAccount.transferOut(transferValue);
+
+                expect(bankAccount.balance).toEqual(expectedBalance);
+            });
+        });
     });
 });

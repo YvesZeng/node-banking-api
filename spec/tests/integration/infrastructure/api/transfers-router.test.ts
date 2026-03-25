@@ -121,5 +121,33 @@ describe('Infrastructure | API | TransfersRouter', () => {
             expect(res.status).toBe(StatusCodes.UNPROCESSABLE_ENTITY);
             expect(res.body).toStrictEqual(expectedResponse);
         });
+
+        it('should persist transfer record in database after successful transfer', async () => {
+            const bankAccountRepository = container.get<BankAccountRepository>(
+                TYPES.BankAccountRepository,
+            );
+            const toBankAccount = new BankAccount(100, customerFixture);
+            const fromBankAccount = new BankAccount(100, customerFixture);
+            await bankAccountRepository.save(fromBankAccount);
+            await bankAccountRepository.save(toBankAccount);
+            const payload = {
+                fromBankAccountId: fromBankAccount.id,
+                toBankAccountId: toBankAccount.id,
+                amount: 50,
+            };
+
+            const res = await agent.post('/api/transfers').send(payload);
+
+            expect(res.status).toBe(StatusCodes.CREATED);
+            
+            const transfersRes = await agent.get(`/api/bank-accounts/${fromBankAccount.id}/transfers`);
+            expect(transfersRes.status).toBe(StatusCodes.OK);
+            expect(transfersRes.body).toHaveLength(1);
+            expect(transfersRes.body[0]).toMatchObject({
+                fromBankAccountId: fromBankAccount.id,
+                toBankAccountId: toBankAccount.id,
+                amount: 50,
+            });
+        });
     });
 });

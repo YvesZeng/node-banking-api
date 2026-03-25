@@ -16,11 +16,17 @@ describe('Application | UseCases | TransferAmount', () => {
     });
     it('calls bankAccountRepository getById once with fromBankAccount id', async () => {
         const transferRepoMock = transferRepositoryMock();
+        const fromAccount = new BankAccount(200, customerFixture, 1);
+        const toAccount = new BankAccount(250, customerFixture, 2);
         const transferData: TransferDTO = {
             fromBankAccountId: 1,
             toBankAccountId: 2,
             amount: 100,
         };
+        bankAccountRepositoryMock.getById = jest
+            .fn()
+            .mockResolvedValueOnce(fromAccount)
+            .mockResolvedValueOnce(toAccount);
         const transferAmount = new TransferAmount(bankAccountRepositoryMock, transferRepoMock);
 
         await transferAmount.execute(transferData);
