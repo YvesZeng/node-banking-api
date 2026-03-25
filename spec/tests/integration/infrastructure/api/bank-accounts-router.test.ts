@@ -183,21 +183,18 @@ describe('Infrastructure | API | BankAccountsRouter', () => {
                 toBankAccountId: account2.id!,
                 amount: 100,
                 referenceDate: new Date(),
-                id: 1,
             };
             const transferToGivenAccount: Transfer = {
                 fromBankAccountId: account2.id!,
                 toBankAccountId: account1.id!,
                 amount: 100,
                 referenceDate: new Date(),
-                id: 1,
             };
             const randomTransfer: Transfer = {
                 fromBankAccountId: account2.id!,
-                toBankAccountId: 20,
+                toBankAccountId: 999,
                 amount: 100,
                 referenceDate: new Date(),
-                id: 1,
             };
             await transferRepository.save(transferFromGivenAccount);
             await transferRepository.save(transferToGivenAccount);
@@ -205,7 +202,7 @@ describe('Infrastructure | API | BankAccountsRouter', () => {
             const expectedResponse = [
                 {
                     ...transferFromGivenAccount,
-                    referenceDate: transferToGivenAccount.referenceDate.toISOString(),
+                    referenceDate: transferFromGivenAccount.referenceDate.toISOString(),
                 },
                 {
                     ...transferToGivenAccount,

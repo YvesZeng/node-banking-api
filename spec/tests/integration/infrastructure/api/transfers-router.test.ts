@@ -5,9 +5,7 @@ import app from '../../../../../src/infrastructure/api/server';
 import { container } from '../../../../../src/infrastructure/dependency-container';
 import { TYPES } from '@shared/types';
 import { BankAccountRepository } from '@domain/repositories/bank-account-repository';
-import { bankAccountFixture } from '../../../__fixtures__/bank-account.fixture';
 import { customerFixture } from '../../../__fixtures__/customer.fixture';
-import { TransferAmount } from '@application/use-cases/transfer-amount';
 import { BankAccount } from '@domain/entities/bank-account';
 const { setupDB } = require('../../../setupTests');
 
@@ -36,10 +34,10 @@ describe('Infrastructure | API | TransfersRouter', () => {
             const bankAccountRepository = container.get<BankAccountRepository>(
                 TYPES.BankAccountRepository,
             );
-            const toBankAccount = new BankAccount(100, customerFixture, 20);
+            const toBankAccount = new BankAccount(100, customerFixture);
             await bankAccountRepository.save(toBankAccount);
             const payload = {
-                fromBankAccountId: 2,
+                fromBankAccountId: 99999,
                 toBankAccountId: toBankAccount.id,
                 amount: 50,
             };
@@ -57,11 +55,11 @@ describe('Infrastructure | API | TransfersRouter', () => {
             const bankAccountRepository = container.get<BankAccountRepository>(
                 TYPES.BankAccountRepository,
             );
-            const fromBankAccount = new BankAccount(100, customerFixture, 20);
+            const fromBankAccount = new BankAccount(100, customerFixture);
             await bankAccountRepository.save(fromBankAccount);
             const payload = {
                 fromBankAccountId: fromBankAccount.id,
-                toBankAccountId: 10,
+                toBankAccountId: 99999,
                 amount: 50,
             };
             const expectedResponse = {
@@ -78,8 +76,8 @@ describe('Infrastructure | API | TransfersRouter', () => {
             const bankAccountRepository = container.get<BankAccountRepository>(
                 TYPES.BankAccountRepository,
             );
-            const toBankAccount = new BankAccount(100, customerFixture, 10);
-            const fromBankAccount = new BankAccount(100, customerFixture, 20);
+            const toBankAccount = new BankAccount(100, customerFixture);
+            const fromBankAccount = new BankAccount(100, customerFixture);
             await bankAccountRepository.save(fromBankAccount);
             await bankAccountRepository.save(toBankAccount);
             const payload = {
@@ -105,8 +103,8 @@ describe('Infrastructure | API | TransfersRouter', () => {
             const bankAccountRepository = container.get<BankAccountRepository>(
                 TYPES.BankAccountRepository,
             );
-            const toBankAccount = new BankAccount(100, customerFixture, 10);
-            const fromBankAccount = new BankAccount(100, customerFixture, 20);
+            const toBankAccount = new BankAccount(100, customerFixture);
+            const fromBankAccount = new BankAccount(100, customerFixture);
             await bankAccountRepository.save(fromBankAccount);
             await bankAccountRepository.save(toBankAccount);
             const payload = {
