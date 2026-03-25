@@ -32,25 +32,35 @@ export function initDatabase(db: Database.Database): void {
     `);
 
     db.exec(`
-        CREATE INDEX IF NOT EXISTS idx_bank_accounts_customer_id 
+        CREATE INDEX IF NOT EXISTS idx_bank_accounts_customer_id
         ON bank_accounts(customer_id)
     `);
 
     db.exec(`
-        CREATE INDEX IF NOT EXISTS idx_transfers_from_account 
+        CREATE INDEX IF NOT EXISTS idx_transfers_from_account
         ON transfers(from_bank_account_id)
     `);
 
     db.exec(`
-        CREATE INDEX IF NOT EXISTS idx_transfers_to_account 
+        CREATE INDEX IF NOT EXISTS idx_transfers_to_account
         ON transfers(to_bank_account_id)
     `);
 
-    const customerCount = db.prepare('SELECT COUNT(*) as count FROM customers').get() as { count: number };
+    const stmt = db.prepare(
+        'SELECT COUNT(*) as count FROM customers',
+    );
+    const customerCount = stmt.get() as { count: number };
     if (customerCount.count === 0) {
-        const insert = db.prepare('INSERT INTO customers (name) VALUES (?)');
-        const names = ['Arisha Barron', 'Branden Gibson', 'Rhonda Church', 'Georgina Hazel'];
-        
+        const insert = db.prepare(
+            'INSERT INTO customers (name) VALUES (?)',
+        );
+        const names = [
+            'Arisha Barron',
+            'Branden Gibson',
+            'Rhonda Church',
+            'Georgina Hazel',
+        ];
+
         db.transaction((names: string[]) => {
             for (const name of names) {
                 insert.run(name);

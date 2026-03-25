@@ -77,8 +77,9 @@ export class SQLiteBankAccountRepository implements BankAccountRepository {
         `).run(bankAccount.balance, bankAccount.id);
 
         if (result.changes === 0) {
+            const accountId = bankAccount.id ?? 0;
             throw new BankAccountNotFound(
-                `Bank account with id ${bankAccount.id} not found`,
+                `Bank account with id ${accountId} not found`,
             );
         }
 
