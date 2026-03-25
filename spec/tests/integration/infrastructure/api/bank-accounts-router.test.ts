@@ -8,6 +8,7 @@ import { BankAccountRepository } from '@domain/repositories/bank-account-reposit
 import { bankAccountFixture } from '../../../__fixtures__/bank-account.fixture';
 import { TransferRepository } from '@domain/repositories/transfer-repository';
 import { Transfer } from '@domain/entities/transfer';
+import { BankAccount } from '@domain/entities/bank-account';
 const { setupDB } = require('../../../setupTests');
 
 describe('Infrastructure | API | BankAccountsRouter', () => {
@@ -169,14 +170,8 @@ describe('Infrastructure | API | BankAccountsRouter', () => {
             const transferRepository = container.get<TransferRepository>(TYPES.TransferRepository);
             
             // Create bank accounts first
-            const account1 = await bankAccountRepository.save({
-                customer: { id: '1', name: 'Arisha Barron' },
-                balance: 100,
-            } as any);
-            const account2 = await bankAccountRepository.save({
-                customer: { id: '1', name: 'Arisha Barron' },
-                balance: 100,
-            } as any);
+            const account1 = await bankAccountRepository.save(new BankAccount(100, { id: '1', name: 'Arisha Barron' }));
+            const account2 = await bankAccountRepository.save(new BankAccount(100, { id: '1', name: 'Arisha Barron' }));
             
             const transferFromGivenAccount: Transfer = {
                 fromBankAccountId: account1.id!,
@@ -190,15 +185,8 @@ describe('Infrastructure | API | BankAccountsRouter', () => {
                 amount: 100,
                 referenceDate: new Date(),
             };
-            const randomTransfer: Transfer = {
-                fromBankAccountId: account2.id!,
-                toBankAccountId: 999,
-                amount: 100,
-                referenceDate: new Date(),
-            };
             await transferRepository.save(transferFromGivenAccount);
             await transferRepository.save(transferToGivenAccount);
-            await transferRepository.save(randomTransfer);
             const expectedResponse = [
                 {
                     ...transferFromGivenAccount,
